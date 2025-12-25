@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to your location to provide emergency SOS services.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to your location to provide emergency SOS services and live tracking.",
+        "NSLocationAlwaysUsageDescription": "This app needs access to your location to provide emergency SOS services and live tracking."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +24,14 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "SEND_SMS",
+        "READ_CONTACTS"
+      ]
     },
     "web": {
       "output": "static",
@@ -37,6 +49,14 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency SOS services.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location for emergency SOS services.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency SOS services."
         }
       ]
     ],

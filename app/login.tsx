@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useApp } from '@/contexts/AppContext';
 import { Colors } from '@/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -54,7 +55,7 @@ export default function LoginScreen() {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <View style={styles.logoCircle}>
-            <Text style={styles.logoText}>🆘</Text>
+            <Ionicons name="alert-circle" size={48} color="#fff" />
           </View>
           <Text style={styles.appName}>Emergency SOS</Text>
         </View>
@@ -111,7 +112,7 @@ export default function LoginScreen() {
             style={styles.checkboxContainer}
             onPress={() => setRememberDevice(!rememberDevice)}>
             <View style={[styles.checkbox, rememberDevice && styles.checkboxChecked]}>
-              {rememberDevice && <Text style={styles.checkmark}>✓</Text>}
+              {rememberDevice && <Ionicons name="checkmark" size={16} color="#fff" />}
             </View>
             <Text style={styles.checkboxLabel}>Remember this device</Text>
           </TouchableOpacity>
@@ -155,9 +156,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
-  },
-  logoText: {
-    fontSize: 48,
   },
   appName: {
     fontSize: 28,
@@ -220,11 +218,6 @@ const styles = StyleSheet.create({
   checkboxChecked: {
     backgroundColor: '#FF3B30',
     borderColor: '#FF3B30',
-  },
-  checkmark: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
   },
   checkboxLabel: {
     fontSize: 16,

@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Animated,
   Vibration,
   Platform,
 } from 'react-native';
@@ -13,6 +12,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Linking } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function SOSScreen() {
   const router = useRouter();
@@ -20,8 +20,6 @@ export default function SOSScreen() {
   const { setSOSActive, setStatus, emergencyContacts } = useApp();
   const [countdown, setCountdown] = useState(3);
   const [isActive, setIsActive] = useState(false);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const flashAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (countdown > 0) {
@@ -32,44 +30,9 @@ export default function SOSScreen() {
       return () => clearTimeout(timer);
     } else if (countdown === 0 && !isActive) {
       setIsActive(true);
-      startAnimations();
       startVibration();
     }
   }, [countdown, isActive]);
-
-  const startAnimations = () => {
-    // Pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Flash animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(flashAnim, {
-          toValue: 0.3,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(flashAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  };
 
   const startVibration = () => {
     if (Platform.OS === 'android') {
@@ -86,8 +49,6 @@ export default function SOSScreen() {
   const handleCancel = () => {
     setCountdown(3);
     setIsActive(false);
-    pulseAnim.setValue(1);
-    flashAnim.setValue(1);
     Vibration.cancel();
     router.back();
   };
@@ -127,16 +88,7 @@ export default function SOSScreen() {
 
   // Active SOS state
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        styles.activeContainer,
-        {
-          paddingTop: insets.top,
-          opacity: flashAnim,
-          transform: [{ scale: pulseAnim }],
-        },
-      ]}>
+    <View style={[styles.container, styles.activeContainer, { paddingTop: insets.top }]}>
       <View style={styles.content}>
         <Text style={styles.sosActiveText}>SOS ACTIVE</Text>
         <Text style={styles.helpText}>Help is on the way</Text>
@@ -144,19 +96,19 @@ export default function SOSScreen() {
         {/* Actions Sent */}
         <View style={styles.actionsList}>
           <View style={styles.actionItem}>
-            <Text style={styles.actionIcon}>✓</Text>
+            <Ionicons name="checkmark-circle" size={24} color="#fff" style={styles.actionIcon} />
             <Text style={styles.actionText}>Message to Parents — Sent</Text>
           </View>
           <View style={styles.actionItem}>
-            <Text style={styles.actionIcon}>✓</Text>
+            <Ionicons name="checkmark-circle" size={24} color="#fff" style={styles.actionIcon} />
             <Text style={styles.actionText}>Guardian Alert — Sent</Text>
           </View>
           <View style={styles.actionItem}>
-            <Text style={styles.actionIcon}>✓</Text>
+            <Ionicons name="checkmark-circle" size={24} color="#fff" style={styles.actionIcon} />
             <Text style={styles.actionText}>Police Notification — Triggered</Text>
           </View>
           <View style={styles.actionItem}>
-            <Text style={styles.actionIcon}>✓</Text>
+            <Ionicons name="checkmark-circle" size={24} color="#fff" style={styles.actionIcon} />
             <Text style={styles.actionText}>Live Location Sharing — ON</Text>
           </View>
         </View>
@@ -164,14 +116,14 @@ export default function SOSScreen() {
         {/* Controls */}
         <View style={styles.controls}>
           <TouchableOpacity style={styles.controlButton} onPress={handleCallPolice}>
-            <Text style={styles.controlButtonIcon}>🚓</Text>
+            <MaterialIcons name="local-police" size={24} color="#fff" style={styles.controlButtonIcon} />
             <Text style={styles.controlButtonText}>Call Police</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.controlButton}
             onPress={handleCallPrimaryContact}>
-            <Text style={styles.controlButtonIcon}>📞</Text>
+            <Ionicons name="call" size={24} color="#fff" style={styles.controlButtonIcon} />
             <Text style={styles.controlButtonText}>Call Primary Contact</Text>
           </TouchableOpacity>
 
@@ -182,7 +134,7 @@ export default function SOSScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </Animated.View>
+    </View>
   );
 }
 
@@ -252,10 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   actionIcon: {
-    fontSize: 24,
-    color: '#fff',
     marginRight: 12,
-    fontWeight: 'bold',
   },
   actionText: {
     fontSize: 16,
@@ -274,7 +223,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   controlButtonIcon: {
-    fontSize: 24,
     marginRight: 12,
   },
   controlButtonText: {

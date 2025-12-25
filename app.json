@@ -58,6 +58,12 @@
           "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location for emergency SOS services.",
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location for emergency SOS services."
         }
+      ],
+      [
+        "react-native-maps",
+        {
+          "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
       ]
     ],
     "experiments": {

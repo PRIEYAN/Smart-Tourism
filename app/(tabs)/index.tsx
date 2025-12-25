@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useApp } from '@/contexts/AppContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -166,22 +167,22 @@ export default function DashboardScreen() {
         <TouchableOpacity
           style={styles.actionButton}
           onPress={handleEnableTracking}>
-          <Text style={styles.actionIcon}>📍</Text>
+          <Ionicons name="location" size={28} color="#007AFF" />
           <Text style={styles.actionText}>Enable Live{'\n'}Location</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleAlertFamily}>
-          <Text style={styles.actionIcon}>👨‍👩‍👧</Text>
+          <Ionicons name="people" size={28} color="#007AFF" />
           <Text style={styles.actionText}>Alert{'\n'}Family</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleNotifyPolice}>
-          <Text style={styles.actionIcon}>🚓</Text>
+          <MaterialIcons name="local-police" size={28} color="#007AFF" />
           <Text style={styles.actionText}>Notify{'\n'}Police</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={handleShareLiveLink}>
-          <Text style={styles.actionIcon}>📡</Text>
+          <Ionicons name="share-social" size={28} color="#007AFF" />
           <Text style={styles.actionText}>Share Live{'\n'}Link</Text>
         </TouchableOpacity>
       </View>
@@ -298,14 +299,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  actionIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
   actionText: {
     fontSize: 12,
     color: '#111',
     textAlign: 'center',
     fontWeight: '500',
+    marginTop: 8,
   },
 });

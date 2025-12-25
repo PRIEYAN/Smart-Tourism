@@ -5,12 +5,28 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  Linking,
 } from 'react-native';
 import { useApp } from '@/contexts/AppContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
-import { Linking } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+
+// Conditionally import MapView only on native platforms
+let MapView: any = null;
+let Marker: any = null;
+
+if (Platform.OS !== 'web') {
+  try {
+    const Maps = require('react-native-maps');
+    MapView = Maps.default;
+    Marker = Maps.Marker;
+  } catch (e) {
+    console.warn('react-native-maps not available');
+  }
+}
 
 export default function TrackingScreen() {
   const insets = useSafeAreaInsets();
@@ -92,31 +108,76 @@ export default function TrackingScreen() {
         </View>
       </View>
 
-      {/* Map View Placeholder */}
+      {/* Map View */}
       <View style={styles.mapContainer}>
         {location ? (
-          <View style={styles.mapPlaceholder}>
-            <Text style={styles.mapIcon}>🗺️</Text>
-            <Text style={styles.mapText}>Map View</Text>
-            <Text style={styles.coordinatesText}>
-              {location.coords.latitude.toFixed(6)}, {location.coords.longitude.toFixed(6)}
-            </Text>
-            <View style={styles.locationMarker}>
-              <View style={styles.markerDot} />
+          Platform.OS === 'web' ? (
+            <View style={styles.mapPlaceholder}>
+              <Ionicons name="map" size={64} color="#999" />
+              <Text style={styles.mapText}>Map View</Text>
+              <Text style={styles.coordinatesText}>
+                {location.coords.latitude.toFixed(6)}, {location.coords.longitude.toFixed(6)}
+              </Text>
+              <TouchableOpacity
+                style={styles.openMapButton}
+                onPress={() => {
+                  Linking.openURL(
+                    `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`
+                  );
+                }}>
+                <Text style={styles.openMapButtonText}>Open in Google Maps</Text>
+              </TouchableOpacity>
             </View>
-          </View>
+          ) : MapView ? (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              region={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              showsUserLocation={true}
+              showsMyLocationButton={false}
+              toolbarEnabled={false}>
+              {Marker && (
+                <Marker
+                  coordinate={{
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                  }}
+                  title="Your Location"
+                  pinColor="#FF3B30"
+                />
+              )}
+            </MapView>
+          ) : (
+            <View style={styles.mapPlaceholder}>
+              <Ionicons name="location-outline" size={64} color="#999" />
+              <Text style={styles.mapText}>Map unavailable</Text>
+            </View>
+          )
         ) : (
           <View style={styles.mapPlaceholder}>
-            <Text style={styles.mapIcon}>📍</Text>
+            <Ionicons name="location-outline" size={64} color="#999" />
             <Text style={styles.mapText}>Getting location...</Text>
           </View>
         )}
 
         {/* Time & Battery Indicator */}
         <View style={styles.infoBar}>
+          <Ionicons name="time-outline" size={14} color="#fff" />
           <Text style={styles.infoText}>
-            {new Date().toLocaleTimeString()} • 🔋 85%
+            {new Date().toLocaleTimeString()} • 
           </Text>
+          <Ionicons name="battery-full" size={14} color="#fff" style={{ marginLeft: 4 }} />
+          <Text style={styles.infoText}> 85%</Text>
         </View>
       </View>
 
@@ -153,7 +214,7 @@ export default function TrackingScreen() {
       {/* Action Buttons */}
       <View style={styles.actions}>
         <TouchableOpacity style={styles.shareButton} onPress={handleShareLink}>
-          <Text style={styles.shareButtonIcon}>📡</Text>
+          <Ionicons name="share-social" size={20} color="#fff" />
           <Text style={styles.shareButtonText}>Share Live Location Link</Text>
         </TouchableOpacity>
 
@@ -215,54 +276,56 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
+  map: {
+    flex: 1,
+  },
   mapPlaceholder: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#D0D0D0',
   },
-  mapIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
   mapText: {
     fontSize: 18,
     color: '#666',
     fontWeight: '600',
+    marginTop: 16,
   },
   coordinatesText: {
     fontSize: 14,
     color: '#999',
     marginTop: 8,
+    marginBottom: 16,
   },
-  locationMarker: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -12 }, { translateY: -12 }],
+  openMapButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginTop: 8,
   },
-  markerDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FF3B30',
-    borderWidth: 3,
-    borderColor: '#fff',
+  openMapButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   infoBar: {
     position: 'absolute',
     top: 12,
     left: 12,
     right: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   infoText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
+    marginLeft: 4,
   },
   statusSection: {
     paddingHorizontal: 20,
@@ -333,14 +396,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
   },
-  shareButtonIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
   shareButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    marginLeft: 8,
   },
   stopButton: {
     backgroundColor: '#FF3B30',
